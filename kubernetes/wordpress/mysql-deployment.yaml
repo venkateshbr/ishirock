@@ -1,4 +1,20 @@
 apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: wordpress-mysql-pv-volume
+  labels:
+    type: local
+spec:
+  storageClassName: wordpress-mysql-manual
+  accessModes:
+    - ReadWriteOnce
+  capacity:
+    storage: 10Gi
+  hostPath:
+    path: /data/wordpress-mysql
+    type: DirectoryOrCreate
+---
+apiVersion: v1
 kind: Service
 metadata:
   name: wordpress-mysql
@@ -21,9 +37,10 @@ metadata:
 spec:
   accessModes:
     - ReadWriteOnce
+  storageClassName: manualwordpress-mysql-manual
   resources:
     requests:
-      storage: 20Gi
+      storage: 10Gi
 ---
 apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
 kind: Deployment
