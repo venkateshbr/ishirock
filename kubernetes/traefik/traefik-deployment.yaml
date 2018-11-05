@@ -46,6 +46,8 @@ metadata:
 spec:
   selector:
     k8s-app: traefik-ingress-lb
+  externalIPs:
+  - 13.76.194.228
   ports:
     - protocol: TCP
       port: 80
