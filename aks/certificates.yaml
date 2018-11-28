@@ -1,0 +1,17 @@
+apiVersion: certmanager.k8s.io/v1alpha1
+kind: Certificate
+metadata:
+  name: tls-secret
+spec:
+  secretName: tls-secret
+  dnsNames:
+  - ishirock.southeastasia.cloudapp.azure.com
+  acme:
+    config:
+    - http01:
+        ingressClass: nginx
+      domains:
+      - ishirock.southeastasia.cloudapp.azure.com
+  issuerRef:
+    name: ishirock
+    kind: ClusterIssuer
