@@ -13,5 +13,5 @@ spec:
       domains:
       - ishirock.southeastasia.cloudapp.azure.com
   issuerRef:
-    name: ishirock
+    name: letsencrypt-staging
     kind: ClusterIssuer
