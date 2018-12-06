@@ -2,7 +2,6 @@ apiVersion: certmanager.k8s.io/v1alpha1
 kind: Certificate
 metadata:
   name: venk-rancher
-  namespace: docker-registry
 spec:
   secretName: venk-rancher
   dnsNames:
