@@ -1,49 +1,3 @@
-apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
-metadata:
-  name: prometheus-server
-  namespace: prometheus
-  labels:
-    app.kubernetes.io/name: prometheus
-    app.kubernetes.io/part-of: prometheus
-rules:
-  - apiGroups: [""]
-    resources:
-      - services
-      - endpoints
-      - pods
-    verbs: ["get", "list", "watch"]
-
----
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: prometheus-server
-  namespace: prometheus
-  labels:
-    app.kubernetes.io/name: prometheus
-    app.kubernetes.io/part-of: prometheus
-
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: RoleBinding
-metadata:
-  name: prometheus-server
-  namespace: prometheus
-  labels:
-    app.kubernetes.io/name: prometheus
-    app.kubernetes.io/part-of: prometheus
-
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: Role
-  name: prometheus-server
-subjects:
-  - kind: ServiceAccount
-    name: prometheus-server
-    namespace: prometheus
-
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -104,3 +58,18 @@ spec:
     - port: 80
       targetPort: 9090
 ---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: prometheus
+  namespace: prometheus
+  annotations:
+    kubernetes.io/ingress.class: addon-http-application-routing
+spec:
+  rules:
+  - host: prometheus.e8c78187f8d844399c4d.southeastasia.aksapp.io
+    http:
+      paths:
+      - backend:
+          serviceName: prometheus-server
+          servicePort: 80  
