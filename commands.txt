@@ -1,1 +1,0 @@
-kubectl --kubeconfig C:\Dev\ishirock\rancher-kubeconfig

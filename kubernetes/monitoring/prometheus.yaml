@@ -1,25 +1,16 @@
-apiVersion: apps/v1
+apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
   name: prometheus-server
-  namespace: prometheus
-  labels:
-    app.kubernetes.io/name: prometheus
-    app.kubernetes.io/part-of: prometheus
-
+  namespace: monitoring
 spec:
   replicas: 1
-  selector:
-    matchLabels:
-      app.kubernetes.io/name: prometheus
-      app.kubernetes.io/part-of: prometheus
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: prometheus
-        app.kubernetes.io/part-of: prometheus
+        app : prometheus-server
     spec:
-      serviceAccountName: prometheus-server
+      serviceAccountName: prometheus-service-account
       containers:
         - name: prometheus
           image: prom/prometheus
@@ -36,6 +27,7 @@ spec:
       volumes:
         - name: prometheus-config-volume
           configMap:
+            defaultMode: 420
             name: prometheus-configuration
         - name: prometheus-storage-volume
           emptyDir: {}
@@ -44,15 +36,15 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: prometheus-server
-  namespace: prometheus
-  labels:
-    app.kubernetes.io/name: prometheus
-    app.kubernetes.io/part-of: prometheus
+  name: prometheus-service
+  namespace: monitoring
+  annotations:
+    prometheus.io/scrape: 'true'
+    prometheus.io/path: /
+    prometheus.io/port: '80'
 spec:
   selector:
-    app.kubernetes.io/name: prometheus
-    app.kubernetes.io/part-of: prometheus
+    app: prometheus-server
   type: ClusterIP
   ports:
     - port: 80
@@ -62,7 +54,7 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: prometheus
-  namespace: prometheus
+  namespace: monitoring
   annotations:
     kubernetes.io/ingress.class: addon-http-application-routing
 spec:
@@ -71,5 +63,5 @@ spec:
     http:
       paths:
       - backend:
-          serviceName: prometheus-server
+          serviceName: prometheus-service
           servicePort: 80  
